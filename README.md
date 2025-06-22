@@ -1,131 +1,136 @@
-# 🚀 Proyecto Data Lakehouse: Análisis de Datos de E-commerce
-
-## 📄 Descripción General
-
-Este proyecto implementa una robusta arquitectura **Data Lakehouse** en Azure, diseñada para procesar, transformar y analizar datos de un e-commerce provenientes de **múltiples fuentes y con diversos formatos**. La solución utiliza una **Landing Zone** como punto de entrada inicial para los datos crudos, **Azure Data Lake Storage Gen2 (ADLS Gen2)** como almacenamiento central para las capas Medallion, **Azure Event Hubs** para la ingesta de datos en tiempo real, **Azure Data Factory (ADF)** para la orquestación e ingesta, **Azure Databricks** para transformaciones de datos escalables (ETL) y **Power BI** para la visualización y análisis de negocio. El objetivo es proporcionar insights clave sobre ventas, productos, clientes y uso de aplicaciones, democratizando el acceso a datos limpios y estructurados.
+# 🚀 Data Lakehouse Project: E-commerce Data Analytics
 
 ---
 
-## ✨ Características Clave
+## 📄 Overview
 
-* **Enfoque de Datos Multiorigen:** El proyecto maneja y orquesta la ingesta de datos provenientes de tres tipos principales de fuentes:
-    1.  **Streaming (Reseñas de Productos):** Datos de `product_reviews` enviados en tiempo real a Azure Event Hubs.
-    2.  **Simulación de API (Eventos de Aplicación):** Datos de `app_events` extraídos de una fuente externa (simulando una API vía GitHub).
-    3.  **Batch Tradicional (Clientes, Productos, Pedidos):** Datos estructurados de `customers`, `products` y `orders` en formato CSV.
-
-* **Zonas de Almacenamiento:**
-    * **Landing Zone:** Área de almacenamiento temporal inicial en ADLS Gen2 para todos los datos brutos al llegar, antes de cualquier procesamiento o movimiento a las capas de medallón.
-    * **Capas de Datos (Bronce, Plata, Oro - Arquitectura Medallion):**
-        * **Bronce (Raw):** Almacenamiento inmutable de datos crudos tal cual se reciben de la Landing Zone. Se mantienen formatos originales como **Avro** (para streaming) y **Parquet** (para eventos de aplicación), junto con **CSV** para datos batch.
-        * **Plata (Cleaned/Refined):** Datos limpios, desduplicados y transformados con esquema aplicado. Se consolidan en formato **Delta Lake**.
-        * **Oro (Curated/Aggregated):** Datos agregados y modelados en formato dimensional (`fact_sales`, `dim_products`, `dim_customers`, etc.) optimizados para análisis de negocio. Se mantienen en formato **Delta Lake**.
-
-* **Tecnología de Almacenamiento:** Todas las capas residen en **Azure Data Lake Storage Gen2 (ADLS Gen2)**, aprovechando su capacidad de escalabilidad y el espacio de nombres jerárquico. El formato **Delta Lake** se utiliza para las capas Plata y Oro, garantizando transacciones ACID, esquema evolutivo y soporte para operaciones `MERGE`.
-
-* **Ingesta y Orquestación de Datos (ELT/ETL):**
-    * **Azure Event Hubs con Capture:** Implementación de un pipeline de ingesta de datos en tiempo real para **reseñas de productos (`product_reviews`)**. Los datos son enviados a Azure Event Hubs mediante un script personalizado y luego, utilizando la funcionalidad **Capture**, son automáticamente volcados y persistidos en la **Landing Zone** (ADLS Gen2) en formato **Avro**, listos para su procesamiento posterior.
-    * **Azure Data Factory (ADF):** Utilizado para orquestar y automatizar los pipelines de datos.
-        * **Pipeline de `app_events`:** Un **Data Flow** específico dentro de ADF se encarga de:
-            * Extraer datos de `app_events` simulando una API a través de un archivo en **GitHub** (usando un Linked Service HTTP).
-            * Unir estos datos (JSON) con un histórico existente en la **Landing Zone**.
-            * Transformar y consolidar la información.
-            * Finalmente, guardar los datos resultantes en formato **Parquet** en la capa **Bronce**.
-        * **Ingesta de Datos Batch:** Pipelines de copia de ADF trasladan datos estructurados (CSV) de `customers`, `products` y `orders` desde la Landing Zone a la capa **Bronce**.
-    * **Azure Databricks:** Motores de cómputo Spark para transformaciones complejas entre las capas Bronce, Plata y Oro, generando las tablas Delta finales.
-
-* **Autenticación Segura:** Configuración de acceso a ADLS Gen2 mediante **Azure Key Vault** y **Service Principals (OAuth2)** para una gestión segura de credenciales en Databricks.
-
-* **Visualización y Análisis:**
-    * **Power BI:** Conexión directa a las tablas Delta de la capa Oro en ADLS Gen2 para la creación de dashboards interactivos. Esta conexión directa aprovecha la capacidad nativa de Power BI para leer Delta Lake, optimizando la latencia y los costos de cómputo para las consultas de BI.
+This project implements a robust **Data Lakehouse architecture** on Azure, designed to process, transform, and analyze e-commerce data originating from **multiple sources and various formats**. The solution leverages a **Landing Zone** as the initial entry point for raw data, **Azure Data Lake Storage Gen2 (ADLS Gen2)** as the central storage for the Medallion layers, **Azure Event Hubs** for real-time data ingestion, **Azure Data Factory (ADF)** for orchestration and ingestion, **Azure Databricks** for scalable data transformations (ETL), and **Power BI** for business visualization and analytics. The main objective is to provide key insights into sales, products, customers, and application usage, democratizing access to clean and structured data.
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## ✨ Key Features
 
-* **Azure Data Lake Storage Gen2 (ADLS Gen2):** Almacenamiento central de todas las capas y Landing Zone.
-* **Azure Event Hubs:** Ingesta de datos en streaming (ej. `product_reviews`).
-* **Event Hubs Capture:** Persistencia automática de streams de Event Hubs a ADLS Gen2.
-* **Azure Data Factory (ADF):** Orquestación de pipelines, ingesta de datos (Batch, Simulación API) y transformaciones con Data Flows.
-* **Delta Lake:** Formato de tabla para las capas Plata y Oro.
-* **Apache Avro:** Formato de datos para `product_reviews` en la capa Bronce (originado en Landing).
-* **Apache Parquet:** Formato de datos para `app_events` en la capa Bronce (originado en Landing).
-* **CSV:** Formato de datos para Batch en la capa Bronce (originado en Landing).
-* **Azure Databricks:** Plataforma de análisis y ciencia de datos para transformaciones ETL de Spark.
-* **Power BI:** Herramienta de inteligencia de negocio.
-* **Azure Key Vault:** Gestión segura de secretos.
-* **Spark SQL / PySpark:** Para lógica de transformación en Databricks.
-* **GitHub (como fuente de datos externa):** Para el archivo de `app_events` (simulación de API).
+* **Multi-Source Data Approach:** The project handles and orchestrates data ingestion from three main types of sources:
+    1.  **Streaming (Product Reviews):** `product_reviews` data sent in real-time to Azure Event Hubs.
+    2.  **API Simulation (Application Events):** `app_events` data extracted from an external source (simulating an API via GitHub).
+    3.  **Traditional Batch (Customers, Products, Orders):** Structured `customers`, `products`, and `orders` data in CSV format.
+
+* **Storage Zones:**
+    * **Landing Zone:** Initial temporary storage area in ADLS Gen2 for all raw incoming data, prior to any processing or movement to the medallion layers.
+    * **Data Layers (Bronze, Silver, Gold - Medallion Architecture):**
+        * **Bronze (Raw):** Immutable storage of raw data as received from the Landing Zone. Original formats such as **Avro** (for streaming) and **Parquet** (for application events) are maintained, along with **CSV** for batch data.
+        * **Silver (Cleaned/Refined):** Cleaned, deduplicated, and transformed data with schema enforced. Data is consolidated into **Delta Lake** format.
+        * **Gold (Curated/Aggregated):** Aggregated and modeled data in a dimensional format (`fact_sales`, `dim_products`, `dim_customers`, etc.) optimized for business analytics. Data is maintained in **Delta Lake** format.
+
+* **Storage Technology:** All layers reside in **Azure Data Lake Storage Gen2 (ADLS Gen2)**, leveraging its scalability and hierarchical namespace capabilities. **Delta Lake** format is used for the Silver and Gold layers, ensuring ACID transactions, schema evolution, and support for `MERGE` operations.
+
+* **Data Ingestion and Orchestration (ELT/ETL):**
+    * **Azure Event Hubs with Capture:** Implementation of a real-time data ingestion pipeline for **product reviews (`product_reviews`)**. Data is sent to Azure Event Hubs via a custom script and then, using the **Capture** feature, is automatically dumped and persisted to the **Landing Zone** (ADLS Gen2) in **Avro** format, ready for further processing.
+    * **Azure Data Factory (ADF):** Used to orchestrate and automate data pipelines.
+        * **`app_events` Pipeline:** A specific **Data Flow** within ADF is responsible for:
+            * Extracting `app_events` data, simulating an API via a file on **GitHub** (using an HTTP Linked Service).
+            * Joining this data (JSON) with existing historical data in the **Landing Zone**.
+            * Transforming and consolidating the information.
+            * Finally, saving the resulting data in **Parquet** format to the **Bronze** layer.
+        * **Batch Data Ingestion:** ADF copy pipelines transfer structured batch data (CSV) for `customers`, `products`, and `orders` from the Landing Zone to the **Bronze** layer.
+    * **Azure Databricks:** Spark compute engines for complex transformations between the Bronze, Silver, and Gold layers, generating the final Delta tables.
+
+* **Secure Authentication:** ADLS Gen2 access is configured using **Azure Key Vault** and **Service Principals (OAuth2)** for secure credential management in Databricks.
+
+* **Visualization and Analytics:**
+    * **Power BI:** Direct connection to the Gold layer Delta tables in ADLS Gen2 for creating interactive dashboards. This direct connection leverages Power BI's native ability to read Delta Lake, optimizing latency and compute costs for BI queries.
 
 ---
 
-## 📂 Estructura del Proyecto (Ejemplo)
+## 🛠️ Technologies Used
 
-├── adf_pipelines/                     # Archivos de configuración/templates de Azure Data Factory
-│   ├── landing_to_bronze_batch_copy.json # Para CSVs de clientes, productos, pedidos y Avro de reviews
-│   └── app_events_data_flow_pipeline.json # Pipeline para unir y convertir app_events a Parquet en Bronce
+* **Azure Data Lake Storage Gen2 (ADLS Gen2):** Central storage for all layers and Landing Zone.
+* **Azure Event Hubs:** Real-time data ingestion (e.g., `product_reviews`).
+* **Event Hubs Capture:** Automatic persistence of Event Hubs streams to ADLS Gen2.
+* **Azure Data Factory (ADF):** Pipeline orchestration, data ingestion (Batch, API Simulation), and Data Flow transformations.
+* **Delta Lake:** Table format for Silver and Gold layers.
+* **Apache Avro:** Data format for `product_reviews` in the Bronze layer (originated in Landing).
+* **Apache Parquet:** Data format for `app_events` in the Bronze layer (originated in Landing).
+* **CSV:** Data format for Batch in the Bronze layer (originated in Landing).
+* **Azure Databricks:** Data analytics and science platform for Spark ETL transformations.
+* **Power BI:** Business intelligence tool.
+* **Azure Key Vault:** Secure secret management.
+* **Spark SQL / PySpark:** For transformation logic in Databricks.
+* **GitHub (as external data source):** For `app_events` file (API simulation).
+
+---
+
+## 📂 Project Structure (Example)
+
+```
+├── adf_pipelines/                     # Azure Data Factory configuration/template files
+│   ├── landing_to_bronze_batch_copy.json # For CSVs (customers, products, orders) and Avro (reviews)
+│   └── app_events_data_flow_pipeline.json # Pipeline to join and convert app_events to Parquet in Bronze
 ├── notebooks/
-│   ├── 01_bronze_to_silver.py        # Limpia y refina datos (Avro, Parquet, CSV) a Delta Plata
-│   └── 02_silver_to_gold_modeling.py # Agrega y modela datos a la capa Oro (Tablas Delta)
+│   ├── 01_bronze_to_silver.py        # Cleanses and refines data (Avro, Parquet, CSV) to Delta Silver
+│   └── 02_silver_to_gold_modeling.py # Aggregates and models data to the Gold layer (Delta Tables)
 ├── powerbi_reports/
-│   └── Sales_Analytics_Dashboard.pbix # Archivo del dashboard de Power BI
-├── landing_zone_data/                 # Zona de aterrizaje inicial en ADLS Gen2
-│   ├── historical_app_events.json     # Histórico para Data Flow de app_events
-│   ├── product_reviews/               # Datos de Event H
+│   └── Sales_Analytics_Dashboard.pbix # Power BI dashboard file
+├── landing_zone_data/                 # Initial landing zone in ADLS Gen2
+│   ├── historical_app_events.json     # Historical data for app_events Data Flow
+│   ├── product_reviews/               # Data from Event Hubs Capture (Avro)
 │   ├── customers.csv
 │   ├── products.csv
 │   └── orders.csv
-├── event_hub_scripts/                 # (Opcional) Scripts para enviar datos a Event Hubs
+├── event_hub_scripts/                 # (Optional) Scripts to send data to Event Hubs
 │   └── send_review_data.py
-└── README.md                          # Este archivo
+└── README.md                          # This file
 
+```
+---
 
-## 🚀 Cómo Ejecutar el Proyecto
+## 🚀 How to Run the Project
 
-### Requisitos Previos
+### Prerequisites
 
-* Suscripción de Azure activa.
-* Recursos de Azure aprovisionados: Azure Data Lake Storage Gen2, Azure Event Hubs, Azure Data Factory, Azure Databricks Workspace, Azure Key Vault.
-* Un Service Principal de Azure AD con los permisos necesarios para ADF (Contribuir a datos de blobs de almacenamiento) y para Databricks (Lector/Colaborador de datos de blobs de almacenamiento).
-* Secretos del Service Principal (Client ID, Client Secret, Tenant ID) almacenados en Azure Key Vault.
-* Power BI Desktop instalado.
+* Active Azure subscription.
+* Provisioned Azure resources: Azure Data Lake Storage Gen2, Azure Event Hubs, Azure Data Factory, Azure Databricks Workspace, Azure Key Vault.
+* An Azure AD Service Principal with necessary permissions for ADF (Storage Blob Data Contributor) and Databricks (Storage Blob Data Reader/Contributor).
+* Service Principal secrets (Client ID, Client Secret, Tenant ID) stored in Azure Key Vault.
+* Power BI Desktop installed.
 
-### Pasos
+### Steps
 
-1.  **Configurar Azure Key Vault y Secretos:**
-    * Almacenar `client-id`, `client-secret` y `tenant-id` de tu Service Principal en Azure Key Vault.
-    * Crear un Secret Scope en Databricks para acceder a estos secretos (ej. `tom-keyvault`).
+1.  **Configure Azure Key Vault and Secrets:**
+    * Store your Service Principal's `client-id`, `client-secret`, and `tenant-id` in Azure Key Vault.
+    * Create a Secret Scope in Databricks to access these secrets (e.g., `tom-keyvault`).
 
-2.  **Configurar Ingesta de Datos Multiorigen a Landing Zone:**
+2.  **Configure Multi-Source Data Ingestion to Landing Zone:**
     * **Event Hubs:**
-        * Crear un Event Hub (ej. para `product_reviews`).
-        * Habilitar la función **Capture** para volcar automáticamente los mensajes al contenedor **Landing** de tu ADLS Gen2 en formato **Avro**.
-        * (Opcional) Usar un script (ej. `send_review_data.py`) para enviar datos de ejemplo a tu Event Hub.
+        * Create an Event Hub (e.g., for `product_reviews`).
+        * Enable the **Capture** feature to automatically dump messages to the **Landing** container of your ADLS Gen2 in **Avro** format.
+        * (Optional) Use a script (e.g., `send_review_data.py`) to send sample data to your Event Hub.
     * **Azure Data Factory:**
-        * Crear Linked Services para ADLS Gen2, GitHub y Event Hubs (si es necesario para monitoreo o triggers).
-        * **Implementar el pipeline de `app_events` con Data Flow:** Configurar el Data Flow para leer desde GitHub, unir con el histórico en **Landing**, y escribir en formato **Parquet** a la capa **Bronce** en ADLS Gen2.
-        * Implementar pipelines de copia para trasladar los archivos batch (CSV) desde la **Landing Zone** a la capa **Bronce**.
+        * Create Linked Services for ADLS Gen2, GitHub, and Event Hubs (if needed for monitoring or triggers).
+        * **Implement the `app_events` Data Flow pipeline:** Configure the Data Flow to read from GitHub, join with historical data in **Landing**, and write in **Parquet** format to the **Bronze** layer in ADLS Gen2.
+        * Implement copy pipelines to transfer batch files (CSV) and Event Hubs Capture dumps (Avro) from the **Landing Zone** to the **Bronze** layer.
 
-3.  **Configurar Cluster de Databricks:**
-    * Crear un cluster en Azure Databricks.
-    * **Importante:** Añadir las configuraciones de Spark para el acceso OAuth2 a ADLS Gen2 directamente en la **"Spark Config"** de tu cluster, usando las referencias a tus secretos de Key Vault (o los valores directos para pruebas).
+3.  **Configure Databricks Cluster:**
+    * Create an Azure Databricks cluster.
+    * **Important:** Add the Spark configurations for OAuth2 access to ADLS Gen2 directly in your cluster's **"Spark Config"**, using references to your Key Vault secrets (or direct values for quick testing).
 
-4.  **Ejecutar Notebooks de Databricks:**
-    * Importar los notebooks (`01_bronze_to_silver.py`, `02_silver_to_gold_modeling.py`) a tu espacio de trabajo Databricks.
-    * Adjuntar los notebooks al cluster configurado.
-    * Ejecutar los notebooks secuencialmente para transformar datos de **Bronce** (Avro, Parquet, CSV) a **Plata** (Delta) y de **Plata** a **Oro** (Delta), creando las tablas Delta finales en tu contenedor `gold` (ej. `abfss://gold@tomdatalakehouse.dfs.core.windows.net/fact_sales/`).
+4.  **Execute Databricks Notebooks:**
+    * Import the notebooks (`01_bronze_to_silver.py`, `02_silver_to_gold_modeling.py`) into your Databricks workspace.
+    * Attach the notebooks to the configured cluster.
+    * Run the notebooks sequentially to transform data from **Bronze** (Avro, Parquet, CSV) to **Silver** (Delta) and from **Silver** to **Gold** (Delta), creating the final Delta tables in your `gold` container (e.g., `abfss://gold@tomdatalakehouse.dfs.core.windows.net/fact_sales/`).
 
-5.  **Conectar Power BI:**
-    * Abrir Power BI Desktop.
-    * "Obtener datos" -> "Azure Data Lake Storage Gen2".
-    * Para cada tabla Gold, introducir la URL directa de su carpeta Delta (ej. `https://tomdatalakehouse.dfs.core.windows.net/gold/fact_sales/`).
-    * Autenticar usando la **Clave de Cuenta** de tu Storage Account.
-    * En el Editor de Power Query:
-        * **Filtrar la columna "Extension" por ".parquet"**.
-        * **Combinar el contenido** de la columna "Content" (usando el icono de flechas opuestas).
-        * Renombrar la consulta a tu nombre de tabla (ej. `fact_sales`).
-    * "Cerrar y aplicar" para cargar las tablas en el modelo de Power BI.
+5.  **Connect Power BI:**
+    * Open Power BI Desktop.
+    * "Get Data" -> "Azure Data Lake Storage Gen2".
+    * For each Gold table, enter the direct URL of its Delta folder (e.g., `https://tomdatalakehouse.dfs.core.windows.net/gold/fact_sales/`).
+    * Authenticate using your Storage Account's **Account Key**.
+    * In the Power Query Editor:
+        * **Filter the "Extension" column by ".parquet"**.
+        * **Combine the content** of the "Content" column (using the opposing arrows icon).
+        * Rename the query to your table name (e.g., `fact_sales`).
+    * "Close & Apply" to load the tables into the Power BI model.
 
-6.  **Construir Reportes en Power BI:**
-    * Una vez cargadas las tablas, puedes establecer las relaciones entre ellas y empezar a crear visualizaciones interactivas.
+6.  **Build Power BI Reports:**
+    * Once the tables are loaded, you can establish relationships between them and start creating interactive visualizations.
 
 ---
