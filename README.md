@@ -4,7 +4,7 @@
 
 ## 📄 Overview
 
-This project implements a robust **Data Lakehouse architecture** on Azure, designed to process, transform, and analyze e-commerce data originating from **multiple sources and various formats**. The solution leverages a **Landing Zone** as the initial entry point for raw data, **Azure Data Lake Storage Gen2 (ADLS Gen2)** as the central storage for the Medallion layers, **Azure Event Hubs** for real-time data ingestion, **Azure Data Factory (ADF)** for orchestration and ingestion, **Azure Databricks** for scalable data transformations (ETL), and **Power BI** for business visualization and analytics. The main objective is to provide key insights into sales, products, customers, and application usage, democratizing access to clean and structured data.
+This project implements a robust **Data Lakehouse architecture** on Azure, designed to process, transform, and analyze e-commerce data originating from **multiple sources and various formats**. The solution leverages a **Landing Zone** as the initial entry point for raw data, **Azure Data Lake Storage Gen2 (ADLS Gen2)** as the central storage for the Medallion layers, **Azure Event Hubs** for real-time data ingestion, **Azure Data Factory (ADF)** for orchestration and ingestion, **Azure Databricks** for scalable data transformations (ETL), and **Power BI** for business visualization and analytics. The main objective is to provide key insights into sales, products, customers, and application usage, democratizing access to clean and structured data. **All project data is synthetically generated using Python scripts, specifically leveraging the Faker library to simulate realistic e-commerce datasets.**
 
 ---
 
