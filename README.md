@@ -142,24 +142,18 @@ Below are key visuals illustrating the project's development and achievements:
 
 * **Screenshot 1: Data Pipeline Flow in Databricks.**
 
-<img src="images/pipelineunion.png" width="70%">
-
-<img src="images/pipeline_success.png" width="70%">
+<img src="images/pipelineunion.png" width="60%">
 
 * **Screenshot 2: Gold Layer Tables in ADLS Gen2.**
 
-<img src="images/goldlayer.png" width="70%">
+<img src="images/goldlayer.png" width="60%">
+<img src="images/dim_products_table.png" width="70%">
 
 * **Screenshot 3: Power BI Dashboard - Sales Performance.**
 
-<img src="images/dashboard.jpeg" width="80%">
+<img src="images/dashboard.jpeg" width="60%">
 
-* **Screenshot 4: Azure Portal - ADLS Gen2 (showing folder structure).**
 
-<img src="images/containers.jpeg" alt="Diagrama de Arquitectura del Data Lakehouse de E-commerce" width="80%">
-
----
----
 
 ## 📧 Contact
 
