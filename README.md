@@ -40,6 +40,8 @@ This project implements a robust **Data Lakehouse architecture** on Azure, desig
 * **Visualization and Analytics:**
     * **Power BI:** Direct connection to the Gold layer Delta tables in ADLS Gen2 for creating interactive dashboards. This direct connection leverages Power BI's native ability to read Delta Lake, optimizing latency and compute costs for BI queries.
 
+<img src="images/project2.jpg" width="50%">
+
 ---
 
 ## 🛠️ Technologies Used
@@ -132,5 +134,34 @@ This project implements a robust **Data Lakehouse architecture** on Azure, desig
 
 6.  **Build Power BI Reports:**
     * Once the tables are loaded, you can establish relationships between them and start creating interactive visualizations.
+---
+
+## 📸 Visuals & Dashboards
+
+Below are key visuals illustrating the project's development and achievements:
+
+* **Screenshot 1: Data Pipeline Flow in Databricks.**
+* 
+<img src="images/pipeline_success.png" width="80%">
+<img src="images/pipelineunion.png" width="80%">
+
+* **Screenshot 2: Gold Layer Tables in ADLS Gen2.**
+
+<img src="images/goldlayerr.jpeg" width="80%">
+
+* **Screenshot 3: Power BI Dashboard - Sales Performance.**
+
+<img src="images/dashboard.jpeg" width="80%">
+
+* **Screenshot 4: Azure Portal - ADLS Gen2 (showing folder structure).**
+
+<img src="images/containers.jpeg" alt="Diagrama de Arquitectura del Data Lakehouse de E-commerce" width="80%">
 
 ---
+---
+
+## 📧 Contact
+
+* **Braulio Tomas Fernandez Trejo**
+* **LinkedIn:** [Link to your LinkedIn Profile]
+* **GitHub:** [https://github.com/Tomcodedays]
