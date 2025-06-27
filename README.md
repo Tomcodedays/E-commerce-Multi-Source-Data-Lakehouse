@@ -46,45 +46,27 @@ This project implements a robust **Data Lakehouse architecture** on Azure, desig
 
 ## 🛠️ Technologies Used
 
-* **Azure Data Lake Storage Gen2 (ADLS Gen2):** Central storage for all layers and Landing Zone.
-* **Azure Event Hubs:** Real-time data ingestion (e.g., `product_reviews`).
-* **Event Hubs Capture:** Automatic persistence of Event Hubs streams to ADLS Gen2.
-* **Azure Data Factory (ADF):** Pipeline orchestration, data ingestion (Batch, API Simulation), and Data Flow transformations.
-* **Delta Lake:** Table format for Silver and Gold layers.
-* **Apache Avro:** Data format for `product_reviews` in the Bronze layer (originated in Landing).
-* **Apache Parquet:** Data format for `app_events` in the Bronze layer (originated in Landing).
-* **CSV:** Data format for Batch in the Bronze layer (originated in Landing).
-* **Azure Databricks:** Data analytics and science platform for Spark ETL transformations.
-* **Power BI:** Business intelligence tool.
-* **Azure Key Vault:** Secure secret management.
-* **Spark SQL / PySpark:** For transformation logic in Databricks.
-* **GitHub (as external data source):** For `app_events` file (API simulation).
+This project utilizes a comprehensive suite of Azure services and data technologies:
+
+* **Azure Core:**
+    * **Azure Data Lake Storage Gen2 (ADLS Gen2):** Centralized data storage.
+    * **Azure Event Hubs:** Real-time data streaming.
+    * **Azure Data Factory (ADF):** ETL orchestration and data flows.
+    * **Azure Databricks:** Spark-based data processing and analytics.
+    * **Azure Key Vault:** Secure secret management.
+* **Data Formats & Frameworks:**
+    * **Delta Lake:** Open-source storage layer for ACID transactions on data lakes.
+    * **Apache Avro:** Efficient data serialization format (for streaming).
+    * **Apache Parquet:** Columnar storage format (for `app_events`).
+    * **CSV:** Standard batch data format.
+* **Programming & Tools:**
+    * **Python (with Faker library):** For synthetic data generation and custom scripts.
+    * **Spark SQL / PySpark:** For data transformation logic in Databricks.
+    * **Power BI:** Business intelligence and data visualization.
+    * **GitHub:** Used as an external source for API simulation data.
 
 ---
 
-## 📂 Project Structure (Example)
-
-```
-├── adf_pipelines/                     # Azure Data Factory configuration/template files
-│   ├── landing_to_bronze_batch_copy.json # For CSVs (customers, products, orders) and Avro (reviews)
-│   └── app_events_data_flow_pipeline.json # Pipeline to join and convert app_events to Parquet in Bronze
-├── notebooks/
-│   ├── 01_bronze_to_silver.py        # Cleanses and refines data (Avro, Parquet, CSV) to Delta Silver
-│   └── 02_silver_to_gold_modeling.py # Aggregates and models data to the Gold layer (Delta Tables)
-├── powerbi_reports/
-│   └── Sales_Analytics_Dashboard.pbix # Power BI dashboard file
-├── landing_zone_data/                 # Initial landing zone in ADLS Gen2
-│   ├── historical_app_events.json     # Historical data for app_events Data Flow
-│   ├── product_reviews/               # Data from Event Hubs Capture (Avro)
-│   ├── customers.csv
-│   ├── products.csv
-│   └── orders.csv
-├── event_hub_scripts/                 # (Optional) Scripts to send data to Event Hubs
-│   └── send_review_data.py
-└── README.md                          # This file
-
-```
----
 
 ## 🚀 How to Run the Project
 
@@ -114,23 +96,18 @@ This project implements a robust **Data Lakehouse architecture** on Azure, desig
 
 3.  **Configure Databricks Cluster:**
     * Create an Azure Databricks cluster.
-    * **Important:** Add the Spark configurations for OAuth2 access to ADLS Gen2 directly in your cluster's **"Spark Config"**, using references to your Key Vault secrets (or direct values for quick testing).
 
 4.  **Execute Databricks Notebooks:**
     * Import the notebooks (`01_bronze_to_silver.py`, `02_silver_to_gold_modeling.py`) into your Databricks workspace.
-    * Attach the notebooks to the configured cluster.
-    * Run the notebooks sequentially to transform data from **Bronze** (Avro, Parquet, CSV) to **Silver** (Delta) and from **Silver** to **Gold** (Delta), creating the final Delta tables in your `gold` container (e.g., `abfss://gold@tomdatalakehouse.dfs.core.windows.net/fact_sales/`).
+    * Attach them to your configured cluster and run them sequentially to transform data from Bronze to Silver, and then from Silver to Gold Delta tables.
 
 5.  **Connect Power BI:**
     * Open Power BI Desktop.
     * "Get Data" -> "Azure Data Lake Storage Gen2".
     * For each Gold table, enter the direct URL of its Delta folder (e.g., `https://tomdatalakehouse.dfs.core.windows.net/gold/fact_sales/`).
     * Authenticate using your Storage Account's **Account Key**.
-    * In the Power Query Editor:
-        * **Filter the "Extension" column by ".parquet"**.
-        * **Combine the content** of the "Content" column (using the opposing arrows icon).
-        * Rename the query to your table name (e.g., `fact_sales`).
-    * "Close & Apply" to load the tables into the Power BI model.
+    * In the Power Query Editor, filter the ".parquet" extension and combine the content of the "Content" column to load the Delta table.
+    * Load all necessary Gold tables (fact_sales, dim_products, dim_customers, etc.).
 
 6.  **Build Power BI Reports:**
     * Once the tables are loaded, you can establish relationships between them and start creating interactive visualizations.
