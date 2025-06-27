@@ -141,13 +141,14 @@ This project implements a robust **Data Lakehouse architecture** on Azure, desig
 Below are key visuals illustrating the project's development and achievements:
 
 * **Screenshot 1: Data Pipeline Flow in Databricks.**
-* 
-<img src="images/pipeline_success.png" width="80%">
-<img src="images/pipelineunion.png" width="80%">
+
+<img src="images/pipelineunion.png" width="70%">
+
+<img src="images/pipeline_success.png" width="70%">
 
 * **Screenshot 2: Gold Layer Tables in ADLS Gen2.**
 
-<img src="images/goldlayerr.jpeg" width="80%">
+<img src="images/goldlayer.png" width="70%">
 
 * **Screenshot 3: Power BI Dashboard - Sales Performance.**
 
