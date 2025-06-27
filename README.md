@@ -8,6 +8,30 @@ This project implements a robust **Data Lakehouse architecture** on Azure, desig
 
 ---
 
+
+## ✨ Project Overview
+
+This project showcases a robust **Data Lakehouse architecture** built on **Azure**, designed to process, transform, and analyze e-commerce data from **diverse sources and formats**. Our primary goal is to provide **key business insights** into sales, products, customer behavior, and application usage, democratizing access to clean, structured data.
+
+**All project data is synthetically generated using Python scripts with the Faker library to simulate realistic e-commerce datasets**, ensuring a comprehensive and reproducible environment.
+
+---
+
+## 🎯 Why This Project?
+
+In today's data-driven world, e-commerce businesses need a flexible and scalable solution to handle vast amounts of data from various touchpoints. This Data Lakehouse addresses challenges such as:
+
+* Integrating **real-time streaming, API, and batch data**.
+* Providing a **single source of truth** with clean, transformed data.
+* Enabling **advanced analytics and reporting** for informed decision-making.
+
+---
+
+## 🗺️ Architecture Diagram
+
+Below is a high-level overview of the Data Lakehouse architecture, illustrating the data flow from ingestion to consumption.
+<img src="images/project2.jpg" width="50%">
+
 ## ✨ Key Features
 
 * **Multi-Source Data Approach:** The project handles and orchestrates data ingestion from three main types of sources:
