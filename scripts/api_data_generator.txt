@@ -33,9 +33,6 @@ def generate_product_reviews(num_reviews, product_ids, customer_ids):
     return pd.DataFrame(reviews)
 
 if __name__ == "__main__":
-    # Asegúrate de que estos IDs existan en tus datos SQL generados
-    # Para la simulación, podemos generar una lista de IDs de producto y cliente de ejemplo.
-    # En un escenario real, leerías estos IDs de los CSVs generados por el script SQL.
     NUM_PRODUCTS_FOR_REVIEWS = 2000 # Debe coincidir con el número de productos generados en SQL
     NUM_CUSTOMERS_FOR_REVIEWS = 20000 # Debe coincidir con el número de clientes generados en SQL
     
