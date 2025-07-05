@@ -150,9 +150,12 @@ Below are key visuals illustrating the project's development and achievements:
 <img src="images/goldlayer.png" width="60%">
 <img src="images/dim_products_table.png" width="70%">
 
-* **Screenshot 3: Power BI Dashboard - Sales Performance.**
+* **Screenshot 3: Power BI Dashboard - Sales Performance and APP Activity and daily performance
 
-<img src="images/dashboard.jpeg" width="60%">
+**
+
+<img src="images/sales_performance.jpeg" width="60%">
+<img src="images/app_activity.jpeg" width="60%">
 
 
 
