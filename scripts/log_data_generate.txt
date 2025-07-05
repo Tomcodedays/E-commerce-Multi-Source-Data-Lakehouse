@@ -7,7 +7,6 @@ from faker import Faker
 fake = Faker('en_US') # Para user_agent y ip_address
 
 def generate_log_entry(customer_ids, product_ids, current_date_time):
-    # Definir probabilidades para los tipos de evento (MODIFICACIÓN)
     event_probabilities = {
         "page_view": 0.40,         # Muy común
         "search": 0.20,            # Relativamente común
@@ -25,13 +24,10 @@ def generate_log_entry(customer_ids, product_ids, current_date_time):
     status_codes = [200, 200, 200, 404, 500, 503] # Más éxitos que errores
     
     user_id = random.choice(customer_ids)
-    # No todos los eventos son de producto (mantener 70% de eventos con product_id)
     product_id = random.choice(product_ids) if random.random() < 0.7 else None
     
-    # Seleccionar event_type basado en las probabilidades (MODIFICACIÓN)
     event_type = random.choices(event_types_list, weights=weights_list, k=1)[0]
     
-    # Usar el current_date_time pasado para simular diferentes momentos
     timestamp = current_date_time.isoformat() + "Z" # Formato ISO 8601 con Z para UTC
     
     log_entry = {
@@ -52,15 +48,12 @@ def generate_log_entry(customer_ids, product_ids, current_date_time):
     elif event_type == "error":
         log_entry["details"]["error_code"] = random.choice(status_codes)
         log_entry["details"]["message"] = random.choice(["DB connection lost", "API timeout", "Invalid input", "Authentication failed"])
-        # Introduce una anomalía: un pico de errores 500
-        # Aumenté la prob. de esta anomalía para que sea más notable en la simulación diaria
         if random.random() < 0.01 and current_date_time.hour == 14 and current_date_time.minute % 5 == 0: # 1% chance, every 5th minute, specifically at 2 PM
             log_entry["details"]["error_code"] = 500
             log_entry["details"]["message"] = "CRITICAL_SYSTEM_FAILURE"
     elif event_type == "login_failure":
         log_entry["details"]["reason"] = random.choice(["Wrong password", "Account locked", "User not found"])
 
-    # Eliminar 'details' si está vacío
     if not log_entry["details"]:
         del log_entry["details"]
                 
@@ -84,13 +77,8 @@ def simulate_log_generation_to_file(num_entries=100000, filename="app_events.jso
         for i in range(num_entries):
             # Calcular el día al que pertenece este log
             day_offset = i // entries_per_day
-            
-            # Calcular la hora dentro del día (simulando distribución a lo largo del día)
-            # Esto asegurará que los timestamps no sean todos a la misma hora del día
             time_in_day_seconds = random.randint(0, 24 * 3600 - 1) # Segundos aleatorios en el día
-            
             current_date_time = start_date + timedelta(days=day_offset, seconds=time_in_day_seconds)
-            
             log = generate_log_entry(customer_ids_list, product_ids_list, current_date_time)
             f.write(log + "\n")
             if i % 100000 == 0: # Imprimir cada 100,000 logs
