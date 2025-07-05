@@ -31,7 +31,7 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 
 ---
 
-## ✨ **Key Features**
+##  **Key Features**
 
 ### **🌐 Multi-Source Data Approach**
 | Type | Source | Description | Format |
@@ -40,14 +40,14 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 | **API Simulation** | GitHub | Application events | JSON → Parquet |
 | **Batch** | CSV Files | Customers, products, orders | CSV |
 
-### **🏗 Storage Zones**
+### **Storage Zones**
 
-#### ** Landing Zone**
+#### **Landing Zone**
 - Initial temporary storage in ADLS Gen2
 - Raw data before processing
 - Entry point for all sources
 
-#### ** Medallion Architecture**
+#### **Medallion Architecture**
 <table>
 <tr>
 <td align="center" width="33%">
@@ -146,14 +146,15 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 ### **⚙️ Step-by-Step Configuration**
 
 <details>
-<summary>🔧 1. Configure Azure Key Vault</summary>
+<summary>1. Generate Synthetic Data & Configure Azure Key Vault</summary>
 
+- Generate your project's synthetic data locally by running sql_data_generator.py, generate_log_data.py, and api_data_generator.py
 - Store `client-id`, `client-secret`, `tenant-id` in Key Vault
 - Create Secret Scope in Databricks (e.g., `tom-keyvault`)
 </details>
 
 <details>
-<summary>📡 2. Configure Multi-Source Ingestion</summary>
+<summary>2. Configure Multi-Source Ingestion</summary>
 
 **Event Hubs:**
 - Create Event Hub for `product_reviews`
@@ -170,7 +171,7 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 <summary> 3. Configure Databricks</summary>
 
 - Create Azure Databricks cluster
-- Import notebooks: `01_bronze_to_silver.py`, `02_silver_to_gold_modeling.py`
+- Import notebooks: `capture_avro_landing__to_bronze_avro_Consolidated.py`, `01_bronze_to_silver.py`, `02_silver_to_gold_modeling.py`
 - Execute sequentially for transformations
 </details>
 
