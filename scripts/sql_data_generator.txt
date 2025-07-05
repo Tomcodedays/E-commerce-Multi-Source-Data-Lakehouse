@@ -35,7 +35,6 @@ def generate_products(num_products):
         category = random.choice(categories)
         price = round(random.uniform(5.0, 1000.0), 2)
         stock = random.randint(0, 500)
-        # Introduce productos con stock cero para simular escasez
         if random.random() < 0.02: # 2% de stock cero
             stock = 0
         products.append({
@@ -58,7 +57,6 @@ def generate_orders(num_orders, customer_ids, product_ids):
         order_date = start_date + timedelta(days=random.randint(0, 364), seconds=random.randint(0, 86399))
         quantity = random.randint(1, 5)
         
-        # Simular algunos pagos fallidos
         status = random.choice(['completed', 'completed', 'completed', 'pending', 'failed'])
         if status == 'failed' and random.random() < 0.1: # 10% de los fallidos no tienen fecha de envío
              shipping_date = None
