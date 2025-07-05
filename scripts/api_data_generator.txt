@@ -1,0 +1,51 @@
+# generate_api_data.py
+import pandas as pd
+from faker import Faker
+import random
+from datetime import datetime, timedelta
+
+fake = Faker('en_US') # Usamos inglés para los textos de review
+
+def generate_product_reviews(num_reviews, product_ids, customer_ids):
+    reviews = []
+    start_date = datetime.now() - timedelta(days=365) # Último año
+    
+    for i in range(num_reviews):
+        review_id = i + 1
+        product_id = random.choice(product_ids)
+        customer_id = random.choice(customer_ids)
+        rating = random.randint(1, 5)
+        review_date = start_date + timedelta(days=random.randint(0, 364), seconds=random.randint(0, 86399))
+        
+        comment = fake.sentence(nb_words=random.randint(5, 20))
+        # Introducir algunos comentarios vacíos para demostrar limpieza
+        if random.random() < 0.03: # 3% de comentarios vacíos
+            comment = ""
+            
+        reviews.append({
+            'review_id': review_id,
+            'product_id': product_id,
+            'customer_id': customer_id,
+            'rating': rating,
+            'review_date': review_date.isoformat(),
+            'comment': comment
+        })
+    return pd.DataFrame(reviews)
+
+if __name__ == "__main__":
+    # Asegúrate de que estos IDs existan en tus datos SQL generados
+    # Para la simulación, podemos generar una lista de IDs de producto y cliente de ejemplo.
+    # En un escenario real, leerías estos IDs de los CSVs generados por el script SQL.
+    NUM_PRODUCTS_FOR_REVIEWS = 2000 # Debe coincidir con el número de productos generados en SQL
+    NUM_CUSTOMERS_FOR_REVIEWS = 20000 # Debe coincidir con el número de clientes generados en SQL
+    
+    product_ids_sample = list(range(1, NUM_PRODUCTS_FOR_REVIEWS + 1))
+    customer_ids_sample = list(range(1, NUM_CUSTOMERS_FOR_REVIEWS + 1))
+    
+    NUM_REVIEWS = 50000
+
+    print(f"Generando {NUM_REVIEWS} valoraciones de productos...")
+    reviews_df = generate_product_reviews(NUM_REVIEWS, product_ids_sample, customer_ids_sample)
+    reviews_df.to_csv('product_reviews.csv', index=False)
+    print("product_reviews.csv generado.")
+    print("Data de API (simulada como CSV) generada exitosamente.")

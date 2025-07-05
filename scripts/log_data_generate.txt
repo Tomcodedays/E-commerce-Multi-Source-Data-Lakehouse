@@ -1,0 +1,119 @@
+import json
+import time
+import random
+from datetime import datetime, timedelta
+from faker import Faker
+
+fake = Faker('en_US') # Para user_agent y ip_address
+
+def generate_log_entry(customer_ids, product_ids, current_date_time):
+    # Definir probabilidades para los tipos de evento (MODIFICACIÓN)
+    event_probabilities = {
+        "page_view": 0.40,         # Muy común
+        "search": 0.20,            # Relativamente común
+        "add_to_cart": 0.15,       # Menos común que vista/búsqueda
+        "login_success": 0.10,     # Frecuente
+        "checkout_start": 0.07,    # Menos común
+        "checkout_complete": 0.05, # El menos común de los éxitos
+        "login_failure": 0.02,     # Raro pero posible
+        "error": 0.01              # Muy raro, pero crucial para monitorear
+    }
+    
+    event_types_list = list(event_probabilities.keys())
+    weights_list = list(event_probabilities.values())
+
+    status_codes = [200, 200, 200, 404, 500, 503] # Más éxitos que errores
+    
+    user_id = random.choice(customer_ids)
+    # No todos los eventos son de producto (mantener 70% de eventos con product_id)
+    product_id = random.choice(product_ids) if random.random() < 0.7 else None
+    
+    # Seleccionar event_type basado en las probabilidades (MODIFICACIÓN)
+    event_type = random.choices(event_types_list, weights=weights_list, k=1)[0]
+    
+    # Usar el current_date_time pasado para simular diferentes momentos
+    timestamp = current_date_time.isoformat() + "Z" # Formato ISO 8601 con Z para UTC
+    
+    log_entry = {
+        "timestamp": timestamp,
+        "user_id": user_id,
+        "event_type": event_type,
+        "ip_address": fake.ipv4_public(),
+        "user_agent": fake.user_agent(),
+        "details": {} # Objeto anidado para mayor complejidad
+    }
+    
+    if event_type in ["page_view", "add_to_cart", "checkout_start", "checkout_complete"]:
+        if product_id:
+            log_entry["details"]["product_id"] = product_id
+        log_entry["details"]["url"] = f"/product/{product_id}" if product_id else f"/category/{fake.word()}"
+    elif event_type == "search":
+        log_entry["details"]["query"] = fake.word() + " " + fake.word()
+    elif event_type == "error":
+        log_entry["details"]["error_code"] = random.choice(status_codes)
+        log_entry["details"]["message"] = random.choice(["DB connection lost", "API timeout", "Invalid input", "Authentication failed"])
+        # Introduce una anomalía: un pico de errores 500
+        # Aumenté la prob. de esta anomalía para que sea más notable en la simulación diaria
+        if random.random() < 0.01 and current_date_time.hour == 14 and current_date_time.minute % 5 == 0: # 1% chance, every 5th minute, specifically at 2 PM
+            log_entry["details"]["error_code"] = 500
+            log_entry["details"]["message"] = "CRITICAL_SYSTEM_FAILURE"
+    elif event_type == "login_failure":
+        log_entry["details"]["reason"] = random.choice(["Wrong password", "Account locked", "User not found"])
+
+    # Eliminar 'details' si está vacío
+    if not log_entry["details"]:
+        del log_entry["details"]
+                
+    return json.dumps(log_entry)
+
+# ------------------------------------------------------------------
+def simulate_log_generation_to_file(num_entries=100000, filename="app_events.jsonl", customer_ids_list=None, product_ids_list=None, num_days=1):
+    if customer_ids_list is None:
+        customer_ids_list = list(range(1, 10001))
+    if product_ids_list is None:
+        product_ids_list = list(range(1, 1001))
+
+    # Calcular cuántas entradas por día para distribuir el millón
+    entries_per_day = num_entries // num_days
+
+    # Fecha de inicio: Hoy (o puedes elegir una fecha pasada para datos "históricos")
+    # Usaremos una fecha reciente, como hace 7 días, para que las tendencias comiencen en el pasado
+    start_date = datetime(2025, 6, 26, 9, 0, 0) # Jueves, 26 de junio de 2025, 09:00:00
+
+    with open(filename, "w") as f:
+        for i in range(num_entries):
+            # Calcular el día al que pertenece este log
+            day_offset = i // entries_per_day
+            
+            # Calcular la hora dentro del día (simulando distribución a lo largo del día)
+            # Esto asegurará que los timestamps no sean todos a la misma hora del día
+            time_in_day_seconds = random.randint(0, 24 * 3600 - 1) # Segundos aleatorios en el día
+            
+            current_date_time = start_date + timedelta(days=day_offset, seconds=time_in_day_seconds)
+            
+            log = generate_log_entry(customer_ids_list, product_ids_list, current_date_time)
+            f.write(log + "\n")
+            if i % 100000 == 0: # Imprimir cada 100,000 logs
+                print(f"Generated {i} logs...")
+    print(f"\n{num_entries} log entries generated and saved to {filename}")
+
+if __name__ == "__main__":
+    NUM_CUSTOMERS_FOR_LOGS = 20000
+    NUM_PRODUCTS_FOR_LOGS = 2000
+    
+    customer_ids_sample = list(range(1, NUM_CUSTOMERS_FOR_LOGS + 1))
+    product_ids_sample = list(range(1, NUM_PRODUCTS_FOR_LOGS + 1))
+
+    NUM_LOG_ENTRIES = 1000000 # Mantener 1 millón de logs
+    NUM_SIMULATED_DAYS = 7    # Simular 7 días
+    
+    print(f"Generando {NUM_LOG_ENTRIES} logs de aplicación distribuidos en {NUM_SIMULATED_DAYS} días...")
+    simulate_log_generation_to_file(
+        num_entries=NUM_LOG_ENTRIES,
+        filename='app_events.jsonl',
+        customer_ids_list=customer_ids_sample,
+        product_ids_list=product_ids_sample,
+        num_days=NUM_SIMULATED_DAYS # Pasar el número de días
+    )
+    print("app_events.jsonl generado.")
+    print("Data de Logs simulada generada exitosamente.")
