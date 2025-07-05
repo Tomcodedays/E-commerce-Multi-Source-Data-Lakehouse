@@ -1,4 +1,4 @@
-# 🚀 Data Lakehouse Project: E-commerce Data Analytics
+#  Data Lakehouse Project: E-commerce Data Analytics
 
 > **Robust Data Lakehouse architecture on Azure for processing, transforming, and analyzing e-commerce data from multiple sources**
 
@@ -10,13 +10,13 @@
 
 ---
 
-## 📋 **Project Overview**
+## **Project Overview**
 
 This solution implements a **complete Data Lakehouse architecture** on Azure that processes e-commerce data from multiple sources and various formats. It leverages **Landing Zone** as the entry point, **Azure Data Lake Storage Gen2** for storage with Medallion architecture, **Azure Event Hubs** for real-time data ingestion, **Azure Data Factory** for orchestration, **Azure Databricks** for scalable ETL transformations, and **Power BI** for business visualization.
 
 **🎯 Main objective:** Provide key insights into sales, products, customers, and application usage, democratizing access to clean and structured data.
 
-> **📊 All project data is synthetically generated** using Python scripts with the Faker library to simulate realistic e-commerce datasets.
+> ** All project data is synthetically generated** using Python scripts with the Faker library to simulate realistic e-commerce datasets.
 
 ---
 
@@ -24,7 +24,7 @@ This solution implements a **complete Data Lakehouse architecture** on Azure tha
 
 <img src="images/project2.jpg" width="50%">
 
-### **🔄 Data Flow:**
+### **Data Flow:**
 ```
 Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 ```
@@ -40,14 +40,14 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 | **API Simulation** | GitHub | Application events | JSON → Parquet |
 | **Batch** | CSV Files | Customers, products, orders | CSV |
 
-### **🏗️ Storage Zones**
+### **🏗 Storage Zones**
 
-#### **📥 Landing Zone**
+#### ** Landing Zone**
 - Initial temporary storage in ADLS Gen2
 - Raw data before processing
 - Entry point for all sources
 
-#### **🏆 Medallion Architecture**
+#### ** Medallion Architecture**
 <table>
 <tr>
 <td align="center" width="33%">
@@ -81,20 +81,20 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 
 ## 🛠️ **Technology Stack**
 
-### **☁️ Azure Services**
+### **Azure Services**
 - **Azure Data Lake Storage Gen2** → Centralized data storage
 - **Azure Event Hubs** → Real-time data streaming
 - **Azure Data Factory** → ETL orchestration and data flows
 - **Azure Databricks** → Spark-based processing
 - **Azure Key Vault** → Secure secret management
 
-### **📊 Data Formats & Frameworks**
+### **Data Formats & Frameworks**
 - **Delta Lake** → ACID transactions on data lakes
 - **Apache Avro** → Efficient serialization (streaming)
 - **Apache Parquet** → Columnar storage format
 - **CSV** → Standard batch data format
 
-### **🔧 Programming & Tools**
+### **Programming & Tools**
 - **Python + Faker** → Synthetic data generation
 - **Spark SQL / PySpark** → Data transformation logic
 - **Power BI** → Business intelligence and visualization
@@ -104,14 +104,14 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 
 ## 📊 **Data Pipelines**
 
-### **🔄 Data Ingestion and Orchestration**
+### **Data Ingestion and Orchestration**
 
-#### **1️⃣ Event Hubs with Capture**
+#### **1. Event Hubs with Capture**
 - Real-time pipeline for **product reviews**
 - Data sent via custom script
 - Automatic **Capture** to Landing Zone in Avro format
 
-#### **2️⃣ Azure Data Factory**
+#### **2. Azure Data Factory**
 - **`app_events` Pipeline**: Specific Data Flow that:
   - Extracts data from GitHub (simulating API)
   - Joins with historical data in Landing Zone
@@ -119,7 +119,7 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
   - Saves to Bronze layer in Parquet format
 - **Copy Pipelines**: Transfer batch data (CSV) and captures (Avro)
 
-#### **3️⃣ Azure Databricks**
+#### **3. Azure Databricks**
 - Spark engines for complex transformations
 - Bronze → Silver → Gold processing
 - Final Delta tables generation
@@ -134,7 +134,7 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 
 ---
 
-## 🚀 **Implementation Guide**
+##  **Implementation Guide**
 
 ### **📋 Prerequisites**
 - Active Azure subscription
@@ -167,7 +167,7 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 </details>
 
 <details>
-<summary>⚡ 3. Configure Databricks</summary>
+<summary> 3. Configure Databricks</summary>
 
 - Create Azure Databricks cluster
 - Import notebooks: `01_bronze_to_silver.py`, `02_silver_to_gold_modeling.py`
@@ -175,7 +175,7 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 </details>
 
 <details>
-<summary>📊 4. Connect Power BI</summary>
+<summary> 4. Connect Power BI</summary>
 
 - Open Power BI Desktop
 - "Get Data" → "Azure Data Lake Storage Gen2"
@@ -192,10 +192,8 @@ Sources → Landing Zone → Bronze → Silver → Gold → Power BI
 ### **🔄 Data Pipeline Flow in Databricks**
 <img src="images/pipelineunion.png" width="60%">
 
-### **🗃️ Gold Layer Tables in ADLS Gen2**
+### **Gold Layer Tables in ADLS Gen2**
 <img src="images/goldlayer.png" width="60%">
-
-<img src="images/dim_products_table.png" width="70%">
 
 ### **📈 Power BI Dashboards**
 
