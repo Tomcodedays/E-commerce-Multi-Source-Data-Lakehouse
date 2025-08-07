@@ -1,4 +1,4 @@
-#  Data Lakehouse Project: E-commerce Data Analytics
+#  E-commerce-Multi-Source-Data-Lakehouse
 
 > **Robust Data Lakehouse architecture on Azure for processing, transforming, and analyzing e-commerce data from multiple sources**
 
